@@ -1,0 +1,39 @@
+long duration;
+int distance;
+int lastDistance = 0;
+
+void setup() {
+  pinMode(11, OUTPUT); // Trigger pin
+  pinMode(12, INPUT);  // Echo pin
+  pinMode(7, OUTPUT);  // LED pin
+  Serial.begin(9600);
+  Serial.println("Ultrasonic motion detection started...");
+}
+
+void loop() {
+  // Send ultrasonic pulse
+  digitalWrite(11, LOW);
+  delayMicroseconds(2);
+  digitalWrite(11, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(11, LOW);
+
+  // Read echo time
+  duration = pulseIn(12, HIGH);
+  distance = duration * 0.034 / 2;  // Convert time to distance in cm
+
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  // Motion detection logic
+  if (abs(distance - lastDistance) > 10) {
+    Serial.println("⚠️ Motion Detected!");
+    digitalWrite(7, HIGH);  // Turn on LED
+  } else {
+    digitalWrite(7, LOW);   // Turn off LED
+  }
+
+  lastDistance = distance;
+  delay(200);  // Delay for stability
+}
